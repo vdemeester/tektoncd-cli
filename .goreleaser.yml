@@ -45,3 +45,16 @@ changelog:
 release:
   draft: true
   prerelease: auto
+brews:
+  -
+    name: tektoncd-cli
+    github:
+      owner: vdemeester
+      name: homebrew-tektoncd-cli
+    folder: Formula
+    homepage: "https://github.com/tektoncd/cli"
+    description: A CLI for interacting with Tekton!
+    test: |
+      system "#{bin}/tkn --version"
+    install: |
+      bin.install "tkn"
