@@ -24,9 +24,12 @@ require (
 	github.com/tektoncd/pipeline v0.10.1
 	github.com/tektoncd/plumbing v0.0.0-20191218171343-56a836c50336
 	github.com/tektoncd/triggers v0.2.1-preview.0.20200130181252-68f571334722
+	go.opencensus.io v0.22.1
 	go.uber.org/multierr v1.1.0
 	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
+	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/yaml.v2 v2.2.5
 	gotest.tools/v3 v3.0.1
 	k8s.io/api v0.17.0
 	k8s.io/apimachinery v0.17.1

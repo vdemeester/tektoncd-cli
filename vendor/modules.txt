@@ -345,6 +345,9 @@ golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 # golang.org/x/time v0.0.0-20191024005414-555d28b269f0
 golang.org/x/time/rate
+# golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
+golang.org/x/xerrors
+golang.org/x/xerrors/internal
 # google.golang.org/api v0.10.0
 google.golang.org/api/googleapi/transport
 google.golang.org/api/internal
@@ -433,6 +436,7 @@ gopkg.in/yaml.v2
 gotest.tools/v3/assert
 gotest.tools/v3/assert/cmp
 gotest.tools/v3/golden
+gotest.tools/v3/icmd
 gotest.tools/v3/internal/difflib
 gotest.tools/v3/internal/format
 gotest.tools/v3/internal/source
