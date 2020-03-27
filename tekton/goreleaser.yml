@@ -1,20 +1,20 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: goreleaser
 spec:
-  inputs:
-    params:
-    - name: package
-      description: base package to build in
-    # FIXME(vdemeester): this is not yet used (see below)
-    - name: github-token-secret
-      description: name of the secret holding the github-token
-      default: github-token
-    - name: flags
-      description: flags to use for the test command
-      default: --timeout=30m
-    resources:
+  params:
+  - name: package
+    description: base package to build in
+  # FIXME(vdemeester): this is not yet used (see below)
+  - name: github-token-secret
+    description: name of the secret holding the github-token
+    default: github-token
+  - name: flags
+    description: flags to use for the test command
+    default: --timeout=30m
+  resources:
+    inputs:
     - name: source
       type: git
       targetPath: src/$(inputs.params.package)
