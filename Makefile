@@ -1,4 +1,22 @@
 YAML_FILES := $(shell find . -type f -regex ".*y[a]ml" -print)
+MODULE     = $(shell env GO111MODULE=on $(GO) list -m)
+DATE      ?= $(shell date +%FT%T%z)
+VERSION   ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
+			cat $(CURDIR)/.version 2> /dev/null || echo v0)
+PKGS       = $(or $(PKG),$(shell env GO111MODULE=on $(GO) list ./...))
+TESTPKGS   = $(shell env GO111MODULE=on $(GO) list -f \
+			'{{ if or .TestGoFiles .XTestGoFiles }}{{ .ImportPath }}{{ end }}' \
+			$(PKGS))
+TOOLS_BIN  = $(CURDIR)/.bin
+
+GOLANGCI_VERSION = v1.24.0
+
+GO           = go
+TIMEOUT_UNIT = 5m
+TIMEOUT_E2E  = 20m
+V = 0
+Q = $(if $(filter 1,$V),,@)
+M = $(shell printf "\033[34;1m🐱\033[0m")
 
 ifneq (,$(wildcard ./VERSION))
 LDFLAGS := -ldflags "-X github.com/tektoncd/cli/pkg/cmd/version.clientVersion=`cat VERSION`"
@@ -7,6 +25,14 @@ endif
 ifneq ($(RELEASE_VERSION),)
 LDFLAGS := -ldflags "-X github.com/tektoncd/cli/pkg/cmd/version.clientVersion=$(RELEASE_VERSION)"
 endif
+
+$(TOOLS_BIN):
+	@mkdir -p $@
+$(TOOLS_BIN)/%: | $(TOOLS_BIN) ; $(info $(M) building $(PACKAGE)…)
+	$Q tmp=$$(mktemp -d); \
+	   env GO111MODULE=off GOPATH=$$tmp GOBIN=$(TOOLS_BIN) $(GO) get $(PACKAGE) \
+		|| ret=$$?; \
+	   rm -rf $$tmp ; exit $$ret
 
 all: bin/tkn test
 
@@ -38,7 +64,7 @@ arm:
 arm64:
 	GOOS=linux GOARCH=arm64 go build -mod=vendor $(LDFLAGS) -o bin/tkn-linux-arm64 ./cmd/tkn
 
-bin/%: cmd/% FORCE
+$(BIN)/%: cmd/% FORCE
 	go build -mod=vendor $(LDFLAGS) -v -o $@ ./$<
 
 check: lint test
@@ -46,13 +72,27 @@ check: lint test
 .PHONY: test
 test: test-unit ## run all tests
 
+RAM = $(TOOLS_BIN)/ram
+$(TOOLS_BIN)/ram: PACKAGE=github.com/vdemeester/ram
+
+.PHONY: watch-test
+watch-test: | $(RAM) ; $(info $(M) watch and run tests) @ ## Watch and run tests
+	$Q $(RAM) -- -failfast
+
+GOLANGCILINT= $(TOOLS_BIN)/golangci-lint
+$(TOOLS_BIN)/golangci-lint: ; $(info $(M) getting golangci-lint $(GOLANGCI_VERSION))
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOLS_BIN) $(GOLANGCI_VERSION)
+
+.PHONY: golangci-lint
+golangci-lint: | $(GOLANGCILINT) ; $(info $(M) running golangci-lint) @ ## Run golangci-lint
+	$Q $(GOLANGCILINT) run --modules-download-mode=vendor --max-issues-per-linter=0 --max-same-issues=0 --deadline 5m
+
 .PHONY: lint
-lint: lint-yaml ## run linter(s)
-	@echo "Linting..."
-	@golangci-lint run ./... --modules-download-mode=vendor \
-							--max-issues-per-linter=0 \
-							--max-same-issues=0 \
-							--deadline 5m
+lint: golangci-lint lint-yaml ## run linter(s)
+	$Q $(GOLANGCILINT) run ./... --modules-download-mode=vendor \
+								--max-issues-per-linter=0 \
+								--max-same-issues=0 \
+								--deadline 5m
 
 .PHONY: lint-yaml
 lint-yaml: ${YAML_FILES} ## runs yamllint on all yaml files
@@ -85,7 +125,7 @@ generated: test-unit-update-golden docs fmt ## generate all files that needs to 
 
 .PHONY: clean
 clean: ## clean build artifacts
-	rm -fR bin VERSION
+	rm -fR bin VERSION $(TOOLS_BIN)
 
 .PHONY: fmt ## formats the GO code(excludes vendors dir)
 fmt:
