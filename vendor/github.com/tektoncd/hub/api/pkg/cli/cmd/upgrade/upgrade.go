@@ -131,28 +131,14 @@ func (opts *options) run() error {
 	catalog := opts.resCatalog()
 
 	hubClient := opts.cli.Hub()
-
-	if opts.version == "" {
-		version, err := hubClient.GetResourceVersionslist(hub.ResourceOption{
-			Name:    opts.name(),
-			Catalog: catalog,
-			Kind:    opts.kind,
-		})
-		if err != nil {
-			return err
-		}
-		// Get the latest version of the resource
-		opts.version = version[0]
-	}
-
-	opts.hubRes = hubClient.GetResourceYaml(hub.ResourceOption{
+	opts.hubRes = hubClient.GetResource(hub.ResourceOption{
 		Name:    opts.name(),
 		Catalog: catalog,
 		Kind:    opts.kind,
 		Version: opts.version,
 	})
 
-	manifest, err := opts.hubRes.ResourceYaml()
+	manifest, err := opts.hubRes.Manifest()
 	if err != nil {
 		return err
 	}
@@ -160,7 +146,7 @@ func (opts *options) run() error {
 	out := opts.cli.Stream().Out
 
 	var errors []error
-	opts.resource, errors = resInstaller.Upgrade([]byte(manifest), catalog, opts.cs.Namespace())
+	opts.resource, errors = resInstaller.Upgrade(manifest, catalog, opts.cs.Namespace())
 	if len(errors) != 0 {
 
 		resourcePipelineMinVersion, vErr := opts.hubRes.MinPipelinesVersion()

@@ -15,30 +15,28 @@
 package git
 
 import (
+	"net/url"
 	"path/filepath"
 	"strings"
 )
 
 // FetchSpec describes how to initialize and fetch from a Git repository.
 type FetchSpec struct {
-	URL         string
-	SSHUrl      string
-	Revision    string
-	Path        string
-	Depth       uint
-	SSLVerify   bool
-	CatalogName string
+	URL       string
+	Revision  string
+	Path      string
+	Depth     uint
+	SSLVerify bool
 }
 
 func (f *FetchSpec) sanitize() {
 	f.URL = strings.TrimSpace(f.URL)
-	f.SSHUrl = strings.TrimSpace(f.SSHUrl)
 	f.Path = strings.TrimSpace(f.Path)
 	f.Revision = strings.TrimSpace(f.Revision)
-	f.CatalogName = strings.TrimSpace(f.CatalogName)
 }
 
 func (f *FetchSpec) clonePath() string {
 	f.sanitize()
-	return filepath.Join(f.Path, f.CatalogName)
+	u, _ := url.Parse(f.URL)
+	return filepath.Join(f.Path, u.Host, u.Path+"@"+f.Revision)
 }

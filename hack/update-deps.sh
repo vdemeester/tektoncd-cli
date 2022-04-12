@@ -29,10 +29,10 @@ VERSION="master"
 # float forward in this repository.
 FLOATING_DEPS=(
   "knative.dev/pkg@${VERSION}"
-  "github.com/tektoncd/pipeline@master"
-  "github.com/tektoncd/triggers@master"
-  "github.com/tektoncd/plumbing@master"
-  "github.com/tektoncd/hub@master"
+  "github.com/tektoncd/pipeline@main"
+  "github.com/tektoncd/triggers@main"
+  "github.com/tektoncd/plumbing@main"
+  "github.com/tektoncd/hub@main"
 )
 
 # Parse flags to determine any we should pass to dep.

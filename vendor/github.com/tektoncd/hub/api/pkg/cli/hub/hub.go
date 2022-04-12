@@ -37,7 +37,6 @@ type Client interface {
 	GetCatalogsList() ([]string, error)
 	Search(opt SearchOption) SearchResult
 	GetResource(opt ResourceOption) ResourceResult
-	GetResourceYaml(opt ResourceOption) ResourceResult
 	GetResourcesList(opt SearchOption) ([]string, error)
 	GetResourceVersions(opt ResourceOption) ResourceVersionResult
 	GetResourceVersionslist(opt ResourceOption) ([]string, error)

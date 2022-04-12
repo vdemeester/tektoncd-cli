@@ -54,7 +54,7 @@ Reinstall a %S of name 'foo':
 or
 
 Reinstall a %S of name 'foo' of version '0.3' from Catalog 'Tekton':
-
+	
 	tkn hub reinstall %s foo --version 0.3 --from tekton
 `
 
@@ -131,15 +131,14 @@ func (opts *options) run() error {
 	}
 
 	hubClient := opts.cli.Hub()
-
-	opts.hubRes = hubClient.GetResourceYaml(hub.ResourceOption{
+	opts.hubRes = hubClient.GetResource(hub.ResourceOption{
 		Name:    opts.name(),
 		Catalog: opts.resCatalog(),
 		Kind:    opts.kind,
 		Version: opts.resVersion(),
 	})
 
-	manifest, err := opts.hubRes.ResourceYaml()
+	manifest, err := opts.hubRes.Manifest()
 	if err != nil {
 		return opts.isResourceNotFoundError(err)
 	}
@@ -147,7 +146,7 @@ func (opts *options) run() error {
 	out := opts.cli.Stream().Out
 
 	var errors []error
-	opts.resource, errors = resInstaller.Update([]byte(manifest), opts.from, opts.cs.Namespace())
+	opts.resource, errors = resInstaller.Update(manifest, opts.from, opts.cs.Namespace())
 	if len(errors) != 0 {
 		resourcePipelineMinVersion, vErr := opts.hubRes.MinPipelinesVersion()
 		if vErr != nil {

@@ -3,19 +3,25 @@ module github.com/tektoncd/cli
 go 1.16
 
 require (
+	cloud.google.com/go/compute v1.3.0 // indirect
 	github.com/AlecAivazis/survey/v2 v2.3.2
+	github.com/Azure/azure-sdk-for-go v61.5.0+incompatible // indirect
 	github.com/Netflix/go-expect v0.0.0-20200312175327-da48e75238e2
 	github.com/armon/go-metrics v0.3.10
 	github.com/armon/go-radix v1.0.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cpuguy83/go-md2man v1.0.10
 	github.com/docker/cli v20.10.12+incompatible
+	github.com/docker/distribution v2.8.0+incompatible // indirect
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/fatih/color v1.13.0
 	github.com/ghodss/yaml v1.0.0
+	github.com/golang-jwt/jwt/v4 v4.3.0 // indirect
 	github.com/golang/snappy v0.0.4
 	github.com/google/go-cmp v0.5.7
 	github.com/google/go-containerregistry v0.8.1-0.20220216220642-00c59d91847c
+	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20220216220642-00c59d91847c // indirect
+	github.com/google/go-containerregistry/pkg/authn/kubernetes v0.0.0-20220223122423-dd8d514a9b24 // indirect
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-hclog v1.1.0
@@ -42,17 +48,20 @@ require (
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
 	github.com/tektoncd/chains v0.8.0
-	github.com/tektoncd/hub v1.7.0
-	github.com/tektoncd/pipeline v0.33.1
+	github.com/tektoncd/hub/api v0.0.0-20220202150105-520f1c65d6ac
+	github.com/tektoncd/pipeline v0.33.0
 	github.com/tektoncd/plumbing v0.0.0-20211012143332-c7cc43d9bc0c
-	github.com/tektoncd/triggers v0.19.0
+	github.com/tektoncd/triggers v0.19.1
 	github.com/tidwall/gjson v1.12.1 // indirect
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.9.0
 	go.uber.org/multierr v1.7.0
 	go.uber.org/zap v1.20.0
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
+	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b // indirect
+	golang.org/x/sys v0.0.0-20220223155357-96fed51e1446 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
+	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
@@ -62,6 +71,7 @@ require (
 	k8s.io/apimachinery v0.23.4
 	k8s.io/cli-runtime v0.21.4
 	k8s.io/client-go v1.5.2
+	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9 // indirect
 	knative.dev/pkg v0.0.0-20220131144930-f4b57aef0006
 	sigs.k8s.io/yaml v1.3.0
 )
