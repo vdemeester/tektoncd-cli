@@ -3,15 +3,15 @@ module github.com/tektoncd/cli
 go 1.17
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.3.2
-	github.com/Netflix/go-expect v0.0.0-20200312175327-da48e75238e2
-	github.com/armon/go-metrics v0.3.11
+	github.com/AlecAivazis/survey/v2 v2.3.5
+	github.com/Netflix/go-expect v0.0.0-20220104043353-73e0943537d2
+	github.com/armon/go-metrics v0.4.0
 	github.com/armon/go-radix v1.0.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cenkalti/backoff/v3 v3.2.2
 	github.com/containerd/containerd v1.6.2 // indirect
 	github.com/cpuguy83/go-md2man v1.0.10
-	github.com/docker/cli v20.10.14+incompatible
+	github.com/docker/cli v20.10.17+incompatible
 	github.com/docker/docker v20.10.16+incompatible
 	github.com/fatih/color v1.13.0
 	github.com/ghodss/yaml v1.0.0
@@ -22,23 +22,23 @@ require (
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-cleanhttp v0.5.2
-	github.com/hashicorp/go-hclog v1.2.0
+	github.com/hashicorp/go-hclog v1.2.1
 	github.com/hashicorp/go-immutable-radix v1.3.1
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/hashicorp/go-plugin v1.4.3
+	github.com/hashicorp/go-plugin v1.4.4
 	github.com/hashicorp/go-retryablehttp v0.7.1
 	github.com/hashicorp/go-rootcerts v1.0.2
 	github.com/hashicorp/go-secure-stdlib/mlock v0.1.2
-	github.com/hashicorp/go-secure-stdlib/parseutil v0.1.4
+	github.com/hashicorp/go-secure-stdlib/parseutil v0.1.6
 	github.com/hashicorp/go-secure-stdlib/strutil v0.1.2
 	github.com/hashicorp/go-sockaddr v1.0.2
 	github.com/hashicorp/go-uuid v1.0.3
-	github.com/hashicorp/go-version v1.4.0
+	github.com/hashicorp/go-version v1.5.0
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/hashicorp/hcl v1.0.0
-	github.com/hashicorp/vault/sdk v0.4.1
+	github.com/hashicorp/vault/sdk v0.5.2
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87
-	github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c
+	github.com/hinshun/vt10x v0.0.0-20220119200601-820417d04eec
 	github.com/jonboulle/clockwork v0.3.0
 	github.com/ktr0731/go-fuzzyfinder v0.6.0
 	github.com/mitchellh/copystructure v1.2.0
@@ -52,7 +52,7 @@ require (
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
 	github.com/tektoncd/chains v0.9.1-0.20220520120701-86291376000f
-	github.com/tektoncd/hub v1.7.0
+	github.com/tektoncd/hub v1.7.3
 	github.com/tektoncd/pipeline v0.35.1
 	github.com/tektoncd/plumbing v0.0.0-20220329085922-d765a5cba75f
 	github.com/tektoncd/triggers v0.20.0
@@ -62,7 +62,7 @@ require (
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	golang.org/x/net v0.0.0-20220412020605-290c469a71a5
-	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad
+	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
 	golang.org/x/time v0.0.0-20220224211638-0e9765cccd65
 	google.golang.org/grpc v1.47.0
@@ -70,7 +70,7 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v2 v2.4.0
 	gotest.tools v2.2.0+incompatible
-	gotest.tools/v3 v3.1.0
+	gotest.tools/v3 v3.2.0
 	k8s.io/api v0.23.5
 	k8s.io/apimachinery v0.23.5
 	k8s.io/cli-runtime v0.23.5
@@ -147,6 +147,7 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/creack/pty v1.1.17 // indirect
 	github.com/cyberphone/json-canonicalization v0.0.0-20210823021906-dc406ceaf94b // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
@@ -231,7 +232,6 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
-	github.com/kr/pty v1.1.8 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/lucasb-eyer/go-colorful v1.0.3 // indirect
@@ -285,7 +285,7 @@ require (
 	github.com/spf13/viper v1.11.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.1.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
-	github.com/stretchr/testify v1.7.1 // indirect
+	github.com/stretchr/testify v1.7.2 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 // indirect
 	github.com/tektoncd/resolution v0.0.0-20220331203013-e4203c70c5eb // indirect
@@ -323,7 +323,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.3.0 // indirect
 	go.opentelemetry.io/proto/otlp v0.12.0 // indirect
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
-	goa.design/goa/v3 v3.3.1 // indirect
+	goa.design/goa/v3 v3.4.0 // indirect
 	gocloud.dev v0.25.0 // indirect
 	gocloud.dev/pubsub/kafkapubsub v0.25.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
@@ -340,7 +340,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apiextensions-apiserver v0.23.4 // indirect
 	k8s.io/klog/v2 v2.60.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220124234850-424119656bbf // indirect
