@@ -1,9 +1,0 @@
-Name:                    test-1
-Namespace:               test-ns-1
-PipelineResource Type:   image
-Description:             a test description
-
-Params
-
- NAME   VALUE
- URL    quay.io/tekton/controller

@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"sort"
 	"strings"
 	"time"
 
@@ -29,7 +28,6 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/spf13/cobra"
 	"github.com/tektoncd/cli/pkg/cli"
-	"github.com/tektoncd/cli/pkg/cmd/pipelineresource"
 	prcmd "github.com/tektoncd/cli/pkg/cmd/pipelinerun"
 	"github.com/tektoncd/cli/pkg/file"
 	"github.com/tektoncd/cli/pkg/flags"
@@ -43,7 +41,6 @@ import (
 	"github.com/tektoncd/cli/pkg/workspaces"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
-	versionedResource "github.com/tektoncd/pipeline/pkg/client/resource/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/discovery"
@@ -65,7 +62,6 @@ type startOptions struct {
 	stream                *cli.Stream
 	askOpts               survey.AskOpt
 	Params                []string
-	Resources             []string
 	ServiceAccountName    string
 	ServiceAccounts       []string
 	Last                  bool
@@ -176,7 +172,6 @@ For passing the workspaces via flags:
 	}
 
 	c.Flags().BoolVarP(&opt.ShowLog, "showlog", "", false, "show logs right after starting the Pipeline")
-	c.Flags().StringSliceVarP(&opt.Resources, "resource", "r", []string{}, "pass the resource name and ref as name=ref")
 	c.Flags().StringArrayVarP(&opt.Params, "param", "p", []string{}, "pass the param as key=value for string type, or key=value1,value2,... for array type")
 	c.Flags().BoolVarP(&opt.Last, "last", "L", false, "re-run the Pipeline using last PipelineRun values")
 	c.Flags().StringVarP(&opt.UsePipelineRun, "use-pipelinerun", "", "", "use this pipelinerun values to re-run the pipeline. ")
@@ -305,10 +300,6 @@ func (opt *startOptions) startPipeline(pipelineStart *v1beta1.Pipeline) error {
 		}
 	}
 
-	if err := mergeRes(pr, opt.Resources); err != nil {
-		return err
-	}
-
 	labels, err := labels.MergeLabels(pr.ObjectMeta.Labels, opt.Labels)
 	if err != nil {
 		return err
@@ -383,27 +374,9 @@ func (opt *startOptions) startPipeline(pipelineStart *v1beta1.Pipeline) error {
 }
 
 func (opt *startOptions) getInput(pipeline *v1beta1.Pipeline) error {
-	cs, err := opt.cliparams.Clients()
-	if err != nil {
-		return err
-	}
-
 	if opt.Last && opt.UsePipelineRun != "" {
-		fmt.Fprintf(opt.stream.Err, "option --last and option --use-pipelinerun are not compatible \n")
-		return err
-	}
-
-	if len(opt.Resources) == 0 && !opt.Last && opt.UsePipelineRun == "" {
-		pres, err := getPipelineResources(cs.Resource, opt.cliparams.Namespace())
-		if err != nil {
-			return fmt.Errorf("failed to list PipelineResources from namespace %s: %v", opt.cliparams.Namespace(), err)
-		}
-
-		resources := getPipelineResourcesByFormat(pres.Items)
-
-		if err = opt.getInputResources(resources, pipeline); err != nil {
-			return err
-		}
+		// fmt.Fprintf(opt.stream.Err, "option --last and option --use-pipelinerun are not compatible \n")
+		return fmt.Errorf("option --last and option --use-pipelinerun are not compatible")
 	}
 
 	params.FilterParamsByType(pipeline.Spec.Params)
@@ -418,7 +391,7 @@ func (opt *startOptions) getInput(pipeline *v1beta1.Pipeline) error {
 	}
 
 	if len(opt.Workspaces) == 0 && !opt.Last && opt.UsePipelineRun == "" {
-		if err = opt.getInputWorkspaces(pipeline); err != nil {
+		if err := opt.getInputWorkspaces(pipeline); err != nil {
 			return err
 		}
 	}
@@ -451,57 +424,6 @@ func (opt *startOptions) getTimeouts(pr *v1beta1.PipelineRun) error {
 			return err
 		}
 		pr.Spec.Timeouts.Finally = &metav1.Duration{Duration: timeoutDuration}
-	}
-	return nil
-}
-
-func (opt *startOptions) getInputResources(resources resourceOptionsFilter, pipeline *v1beta1.Pipeline) error {
-	for _, res := range pipeline.Spec.Resources {
-		options := getOptionsByType(resources, string(res.Type))
-		// directly create resource
-		if len(options) == 0 {
-			ns := opt.cliparams.Namespace()
-			fmt.Fprintf(opt.stream.Out, "no PipelineResource of type \"%s\" found in namespace: %s\n", string(res.Type), ns)
-			fmt.Fprintf(opt.stream.Out, "Please create a new \"%s\" resource for PipelineResource \"%s\"\n", string(res.Type), res.Name)
-			newres, err := opt.createPipelineResource(res.Name, res.Type)
-			if err != nil {
-				return err
-			}
-			if newres.Status != nil {
-				fmt.Printf("resource status %s\n\n", newres.Status)
-			}
-			opt.Resources = append(opt.Resources, res.Name+"="+newres.Name)
-			continue
-		}
-
-		// shows create option in the resource list
-		resCreateOpt := fmt.Sprintf("create new \"%s\" resource", res.Type)
-		options = append(options, resCreateOpt)
-		var ans string
-		qs := []*survey.Question{
-			{
-				Name: "pipelineresource",
-				Prompt: &survey.Select{
-					Message: fmt.Sprintf("Choose the %s resource to use for %s:", res.Type, res.Name),
-					Options: options,
-				},
-			},
-		}
-
-		if err := survey.Ask(qs, &ans, opt.askOpts); err != nil {
-			return err
-		}
-
-		if ans == resCreateOpt {
-			newres, err := opt.createPipelineResource(res.Name, res.Type)
-			if err != nil {
-				return err
-			}
-			opt.Resources = append(opt.Resources, res.Name+"="+newres.Name)
-			continue
-		}
-		name := strings.TrimSpace(strings.Split(ans, " ")[0])
-		opt.Resources = append(opt.Resources, res.Name+"="+name)
 	}
 	return nil
 }
@@ -543,71 +465,6 @@ func (opt *startOptions) getInputParams(pipeline *v1beta1.Pipeline, skipParams m
 	return nil
 }
 
-func getPipelineResources(client versionedResource.Interface, namespace string) (*v1alpha1.PipelineResourceList, error) {
-	pres, err := client.TektonV1alpha1().PipelineResources(namespace).List(context.Background(), v1.ListOptions{})
-	if err != nil {
-		return nil, err
-	}
-	return pres, nil
-}
-
-func getPipelineResourcesByFormat(resources []v1alpha1.PipelineResource) (ret resourceOptionsFilter) {
-	for _, res := range resources {
-		output := ""
-		switch string(res.Spec.Type) {
-		case "git":
-			for _, param := range res.Spec.Params {
-				if param.Name == "url" {
-					output = param.Value + output
-				}
-				if param.Name == "revision" && param.Value != "master" {
-					output = output + "#" + param.Value
-				}
-			}
-			ret.git = append(ret.git, fmt.Sprintf("%s (%s)", res.Name, output))
-		case "image":
-			for _, param := range res.Spec.Params {
-				if param.Name == "url" {
-					output = param.Value + output
-				}
-			}
-			ret.image = append(ret.image, fmt.Sprintf("%s (%s)", res.Name, output))
-		case "pullRequest":
-			for _, param := range res.Spec.Params {
-				if param.Name == "url" {
-					output = param.Value + output
-				}
-			}
-			ret.pullRequest = append(ret.pullRequest, fmt.Sprintf("%s (%s)", res.Name, output))
-		case "storage":
-			for _, param := range res.Spec.Params {
-				if param.Name == "location" {
-					output = param.Value + output
-				}
-			}
-			ret.storage = append(ret.storage, fmt.Sprintf("%s (%s)", res.Name, output))
-		case "cluster":
-			for _, param := range res.Spec.Params {
-				if param.Name == "url" {
-					output = param.Value + output
-				}
-				if param.Name == "user" {
-					output = output + "#" + param.Value
-				}
-			}
-			ret.cluster = append(ret.cluster, fmt.Sprintf("%s (%s)", res.Name, output))
-		case "cloudEvent":
-			for _, param := range res.Spec.Params {
-				if param.Name == "targetURI" {
-					output = param.Value + output
-				}
-			}
-			ret.cloudEvent = append(ret.cloudEvent, fmt.Sprintf("%s (%s)", res.Name, output))
-		}
-	}
-	return
-}
-
 func getOptionsByType(resources resourceOptionsFilter, restype string) []string {
 	if restype == "git" {
 		return resources.git
@@ -628,29 +485,6 @@ func getOptionsByType(resources resourceOptionsFilter, restype string) []string 
 		return resources.cloudEvent
 	}
 	return []string{}
-}
-
-func mergeRes(pr *v1beta1.PipelineRun, optRes []string) error {
-	res, err := parseRes(optRes)
-	if err != nil {
-		return err
-	}
-
-	if len(res) == 0 {
-		return nil
-	}
-
-	for i := range pr.Spec.Resources {
-		if v, ok := res[pr.Spec.Resources[i].Name]; ok {
-			pr.Spec.Resources[i] = v
-			delete(res, v.Name)
-		}
-	}
-	for _, v := range res {
-		pr.Spec.Resources = append(pr.Spec.Resources, v)
-	}
-	sort.Slice(pr.Spec.Resources, func(i, j int) bool { return pr.Spec.Resources[i].Name < pr.Spec.Resources[j].Name })
-	return nil
 }
 
 func mergeSvc(pr *v1beta1.PipelineRun, optSvc []string) error {
@@ -710,45 +544,6 @@ func parseTaskSvc(s []string) (map[string]v1beta1.PipelineTaskRunSpec, error) {
 		}
 	}
 	return svcs, nil
-}
-
-func (opt *startOptions) createPipelineResource(resName string, resType v1alpha1.PipelineResourceType) (*v1alpha1.PipelineResource, error) {
-	res := pipelineresource.Resource{
-		AskOpts: opt.askOpts,
-		Params:  opt.cliparams,
-		PipelineResource: v1alpha1.PipelineResource{
-			ObjectMeta: v1.ObjectMeta{Namespace: opt.cliparams.Namespace()},
-			Spec:       v1alpha1.PipelineResourceSpec{Type: resType},
-		},
-	}
-
-	if err := res.AskMeta(); err != nil {
-		return nil, err
-	}
-
-	resourceTypeParams := map[v1alpha1.PipelineResourceType]func() error{
-		v1alpha1.PipelineResourceTypeGit:         res.AskGitParams,
-		v1alpha1.PipelineResourceTypeStorage:     res.AskStorageParams,
-		v1alpha1.PipelineResourceTypeImage:       res.AskImageParams,
-		v1alpha1.PipelineResourceTypeCluster:     res.AskClusterParams,
-		v1alpha1.PipelineResourceTypePullRequest: res.AskPullRequestParams,
-		v1alpha1.PipelineResourceTypeCloudEvent:  res.AskCloudEventParams,
-	}
-	if res.PipelineResource.Spec.Type != "" {
-		if err := resourceTypeParams[res.PipelineResource.Spec.Type](); err != nil {
-			return nil, err
-		}
-	}
-	cs, err := opt.cliparams.Clients()
-	if err != nil {
-		return nil, err
-	}
-	newRes, err := cs.Resource.TektonV1alpha1().PipelineResources(opt.cliparams.Namespace()).Create(context.Background(), &res.PipelineResource, metav1.CreateOptions{})
-	if err != nil {
-		return nil, err
-	}
-	fmt.Fprintf(opt.stream.Out, "New %s resource \"%s\" has been created\n", newRes.Spec.Type, newRes.Name)
-	return newRes, nil
 }
 
 func printPipelineRun(c *cli.Clients, output string, s *cli.Stream, pr *v1beta1.PipelineRun) error {
