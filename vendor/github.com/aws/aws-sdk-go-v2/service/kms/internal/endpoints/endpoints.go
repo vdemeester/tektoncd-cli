@@ -136,6 +136,15 @@ var defaultPartitions = endpoints.Partitions{
 		IsRegionalized: true,
 		Endpoints: endpoints.Endpoints{
 			endpoints.EndpointKey{
+				Region: "ProdFips",
+			}: endpoints.Endpoint{
+				Hostname: "kms-fips.eu-central-2.amazonaws.com",
+				CredentialScope: endpoints.CredentialScope{
+					Region: "eu-central-2",
+				},
+				Deprecated: aws.TrueTernary,
+			},
+			endpoints.EndpointKey{
 				Region: "af-south-1",
 			}: endpoints.Endpoint{},
 			endpoints.EndpointKey{
@@ -244,6 +253,24 @@ var defaultPartitions = endpoints.Partitions{
 				Deprecated: aws.TrueTernary,
 			},
 			endpoints.EndpointKey{
+				Region: "ap-south-2",
+			}: endpoints.Endpoint{},
+			endpoints.EndpointKey{
+				Region:  "ap-south-2",
+				Variant: endpoints.FIPSVariant,
+			}: {
+				Hostname: "kms-fips.ap-south-2.amazonaws.com",
+			},
+			endpoints.EndpointKey{
+				Region: "ap-south-2-fips",
+			}: endpoints.Endpoint{
+				Hostname: "kms-fips.ap-south-2.amazonaws.com",
+				CredentialScope: endpoints.CredentialScope{
+					Region: "ap-south-2",
+				},
+				Deprecated: aws.TrueTernary,
+			},
+			endpoints.EndpointKey{
 				Region: "ap-southeast-1",
 			}: endpoints.Endpoint{},
 			endpoints.EndpointKey{
@@ -298,6 +325,15 @@ var defaultPartitions = endpoints.Partitions{
 				Deprecated: aws.TrueTernary,
 			},
 			endpoints.EndpointKey{
+				Region: "ap-southeast-4-fips",
+			}: endpoints.Endpoint{
+				Hostname: "kms-fips.ap-southeast-4.amazonaws.com",
+				CredentialScope: endpoints.CredentialScope{
+					Region: "ap-southeast-4",
+				},
+				Deprecated: aws.TrueTernary,
+			},
+			endpoints.EndpointKey{
 				Region: "ca-central-1",
 			}: endpoints.Endpoint{},
 			endpoints.EndpointKey{
@@ -330,6 +366,24 @@ var defaultPartitions = endpoints.Partitions{
 				Hostname: "kms-fips.eu-central-1.amazonaws.com",
 				CredentialScope: endpoints.CredentialScope{
 					Region: "eu-central-1",
+				},
+				Deprecated: aws.TrueTernary,
+			},
+			endpoints.EndpointKey{
+				Region: "eu-central-2",
+			}: endpoints.Endpoint{},
+			endpoints.EndpointKey{
+				Region:  "eu-central-2",
+				Variant: endpoints.FIPSVariant,
+			}: {
+				Hostname: "kms-fips.eu-central-2.amazonaws.com",
+			},
+			endpoints.EndpointKey{
+				Region: "eu-central-2-fips",
+			}: endpoints.Endpoint{
+				Hostname: "kms-fips.eu-central-2.amazonaws.com",
+				CredentialScope: endpoints.CredentialScope{
+					Region: "eu-central-2",
 				},
 				Deprecated: aws.TrueTernary,
 			},
@@ -368,6 +422,15 @@ var defaultPartitions = endpoints.Partitions{
 					Region: "eu-south-1",
 				},
 				Deprecated: aws.TrueTernary,
+			},
+			endpoints.EndpointKey{
+				Region: "eu-south-2",
+			}: endpoints.Endpoint{},
+			endpoints.EndpointKey{
+				Region:  "eu-south-2",
+				Variant: endpoints.FIPSVariant,
+			}: {
+				Hostname: "kms-fips.eu-south-2.amazonaws.com",
 			},
 			endpoints.EndpointKey{
 				Region: "eu-south-2-fips",

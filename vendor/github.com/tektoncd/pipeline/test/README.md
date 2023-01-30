@@ -253,6 +253,16 @@ There are two scenarios in upgrade tests. One is to install the previous release
 validate whether the Tekton pipeline works. The other is to install the previous release, create the pipelines and tasks,
 upgrade to the current release, and validate whether the Tekton pipeline works.
 
+
+#### Prerequisites for running upgrade tests locally:
+- Set up the cluster
+  - Running against a fresh kind cluster
+    - export SKIP_INITIALIZE=true
+
+  - Running against a GKE cluster
+    - export PROJECT_ID=<my_gcp_project>
+    - install [kubetest](https://github.com/kubernetes/test-infra/blob/master/kubetest/README.md)
+
 To run the upgrade tests, run the following command:
 
 ```bash
@@ -306,7 +316,7 @@ The `Clients` struct contains initialized clients for accessing:
 For example, to create a `Pipeline`:
 
 ```bash
-_, err = clients.PipelineClient.Pipelines.Create(test.Route(namespaceName, pipelineName))
+_, err = clients.V1beta1PipelineClient.Pipelines.Create(test.Route(namespaceName, pipelineName))
 ```
 
 And you can use the client to clean up resources created by your test (e.g. in
@@ -356,7 +366,7 @@ err = WaitForTaskRunState(c, hwTaskRunName, func(tr *v1alpha1.TaskRun) (bool, er
         return true, nil
     }
     return false, nil
-}, "TaskRunHasCondition")
+}, "TaskRunHasCondition", v1beta1Version)
 ```
 
 _[Metrics will be emitted](https://github.com/knative/pkg/tree/master/test#emit-metrics)
