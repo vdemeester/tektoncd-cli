@@ -8,11 +8,11 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cpuguy83/go-md2man v1.0.10
 	github.com/creack/pty v1.1.21
-	github.com/docker/cli v27.0.3+incompatible
+	github.com/docker/cli v27.1.1+incompatible
 	github.com/docker/docker v27.0.3+incompatible
 	github.com/fatih/color v1.17.0
 	github.com/google/go-cmp v0.6.0
-	github.com/google/go-containerregistry v0.19.2
+	github.com/google/go-containerregistry v0.20.2
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hinshun/vt10x v0.0.0-20220228203356-1ab2cad5fd82
 	github.com/jonboulle/clockwork v0.4.0
